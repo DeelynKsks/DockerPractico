@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  mi-mariadb:
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysecretpassword
+      - MYSQL_DATABASE=store
+
+  backend_store:
+    build: 
+      context: ./Backend
+      dockerfile: dockerfile
+    ports:
+      - 4500:4500
+    depends_on:
+      - mi-mariadb
+    restart: on-failure    
+    environment:
+      - DBHOST=mi-mariadb
+      - DBPORT=3306
+      - DBUSER=root
+      - DBPASSWORD=mysecretpassword
+      - DBNAME=store
+
+  frontend_store:
+    build: 
+      context: ./Frontend
+      dockerfile: dockerfile
+    ports:
+      - 4501:4501
+    restart: on-failure 
